@@ -83,6 +83,8 @@
 		</dependencies>
 	</dependencyManagement>
 
+	<!-- Commented below code : Originally present -->
+	<!--
 	<build>
 		<plugins>
 			<plugin>
@@ -97,5 +99,59 @@
 			</plugin>
 		</plugins>
 	</build>
+	-->
+
+<!-- Finally used below code, so that image will be generated in arm64 architecture
+    We used io.fabric8 plugin for generating image.
+    We also used spring-boot-maven-plugin to generate jar with mani fest
+    Two commands to use
+    mvn clean package - Generate jar with manifest
+    mvn docker:build - Generate docker image in arm64 architecture
+    Please ensure you have Dockerfile available
+-->
+<build>
+    <plugins>
+        <!-- Other plugins... -->
+
+        <!-- Add the spring-boot-maven-plugin -->
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <executions>
+                <execution>
+                    <goals>
+                        <!-- Include the "repackage" goal -->
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
+        <!-- Add the docker-maven-plugin -->
+        <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+                <images>
+                    <image>
+                        <name>arabindamcs/${project.artifactId}:s6</name>
+                    </image>
+                </images>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>start</id>
+                    <goals>
+                        <!-- Use "build" to create the images with the artifact -->
+                        <goal>build</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
+        <!-- Other plugins... -->
+    </plugins>
+</build>
 
 </project>
